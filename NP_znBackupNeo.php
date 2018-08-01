@@ -1,16 +1,18 @@
 <?php
 /*
 	
-	v0.0.1alpha : NP_znBackupbackup.phphttp://japan.nucleuscms.org/bb/viewtopic.php?t=1596
+	v0.0.1alpha : NP_znBackupbackup.php http://japan.nucleuscms.org/bb/viewtopic.php?t=1596
 */
 class NP_znBackupNeo extends NucleusPlugin
 {
+	private $plugName;
+	
 	function getName()           { return 'znBackupNeo'; }
 	function getURL()            { return 'http://wa.otesei.com/NP_znBackupNeo'; }
 	function supportsFeature($w) { return ($w == 'SqlTablePrefix') ? 1 : 0; }
 	function getVersion()
 	{
-		return '0.0.2alpha';
+		return '0.0.3';
 	}
 	function getAuthor()
 	{
@@ -32,7 +34,7 @@ class NP_znBackupNeo extends NucleusPlugin
 	function languageInclude()
 	{
 		// include language file for this plugin
-		$language = ereg_replace( '[\\|/]', '', getLanguageName());
+		$language = str_replace( array('\\','/'), '', getLanguageName());
 		$incFile  = (file_exists($this->getDirectory().$language.'.php')) ? $language : 'english';
 		include_once($this->getDirectory().$incFile.'.php');
 		$this->language = $incFile;
@@ -62,9 +64,7 @@ class NP_znBackupNeo extends NucleusPlugin
 		global $manager; //vc
 		$manager->subscriptions['AdminPrePageFoot'][] = postVar('filename'); //vc
 	}
-	//
-	//
-	//
+
 	function event_PostPluginOptionsUpdate($data)
 	{
 		if ($data['context'] != 'global' || $data['plugid'] != $this->GetID()) return;
@@ -361,7 +361,7 @@ class NP_znBackupNeo extends NucleusPlugin
 	function verCheck()
 	{
 		global $DIR_LIBS;
-		if (!class_exists(xmlrpcmsg)) include($DIR_LIBS . "xmlrpc.inc.php");
+		if (!class_exists('xmlrpcmsg')) include($DIR_LIBS . 'xmlrpc.inc.php');
 		$service = new xmlrpc_client('/xmlrpc/verCheckService.php', 'wa.otesei.com', 80);
 		$para    = array(new xmlrpcval($this->plugName, 'string'), new xmlrpcval($this->getVersion(), 'string'));
 		$res     = $service->send(new xmlrpcmsg('versioncheck.ping', $para), 20);
@@ -374,4 +374,3 @@ class NP_znBackupNeo extends NucleusPlugin
 		return array('version' => '', 'message' => 'Version Check :: Error');
 	}
 }
-?>
